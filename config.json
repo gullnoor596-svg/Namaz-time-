@@ -1,0 +1,58 @@
+[
+  {
+    "day": "Monday",
+    "fajr": "5:30 AM",
+    "dhuhr": "12:30 PM",
+    "asr": "4:00 PM",
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
+  },
+  {
+    "day": "Tuesday",
+    "fajr": "5:28 AM",
+    "dhuhr": "12:32 PM",
+    "asr": "4:02 PM",
+    "maghrib": "6:32 PM",
+    "isha": "8:02 PM"
+  },
+  {
+    "day": "Wednesday",
+    "fajr": "5:26 AM",
+    "dhuhr": "12:34 PM",
+    "asr": "4:04 PM",
+    "maghrib": "6:34 PM",
+    "isha": "8:04 PM"
+  },
+  {
+    "day": "Thursday",
+    "fajr": "5:24 AM",
+    "dhuhr": "12:36 PM",
+    "asr": "4:06 PM",
+    "maghrib": "6:36 PM",
+    "isha": "8:06 PM"
+  },
+  {
+    "day": "Friday",
+    "fajr": "5:22 AM",
+    "dhuhr": "12:38 PM",
+    "asr": "4:08 PM",
+    "maghrib": "6:38 PM",
+    "isha": "8:08 PM"
+  },
+  {
+    "day": "Saturday",
+    "fajr": "5:20 AM",
+    "dhuhr": "12:40 PM",
+    "asr": "4:10 PM",
+    "maghrib": "6:40 PM",
+    "isha": "8:10 PM"
+  },
+  {
+    "day": "Sunday",
+    "fajr": "5:18 AM",
+    "dhuhr": "12:42 PM",
+    "asr": "4:12 PM",
+    "maghrib": "6:42 PM",
+    "isha": "8:12 PM"
+  }
+]
