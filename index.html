@@ -60,6 +60,7 @@
         .status-bar.loading { color: #fcc419; }
         .status-bar.success { color: #69db7c; }
         .status-bar.error { color: #ff6b6b; }
+        .status-bar.info { color: #64ffda; }
 
         .action-bar {
             display: flex;
@@ -91,7 +92,6 @@
         }
         .action-bar .badge.error { background: rgba(255,107,107,0.08); color: #ff6b6b; }
 
-        /* ===== FRIDAY BOX ===== */
         .friday-box {
             background: linear-gradient(135deg, rgba(252,196,25,0.06), rgba(252,196,25,0.01));
             border: 2px solid rgba(252,196,25,0.15);
@@ -152,7 +152,6 @@
             font-size: 8px;
         }
 
-        /* ===== TIMINGS GRID ===== */
         .timings-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -302,7 +301,7 @@
     </div>
 
     <div class="footer">
-        <span>🔄 Auto-refresh every 60 seconds</span>
+        <span>🔄 Auto-refresh every 30 seconds</span>
     </div>
 </div>
 
@@ -334,15 +333,6 @@ let loadCounter = 0;
 const statusBar = document.getElementById('statusBar');
 const cacheBadge = document.getElementById('cacheBadge');
 const fridayBox = document.getElementById('fridayBox');
-
-// Display IDs
-const displayIds = {
-    fajr: 'displayFajr',
-    dhuhr: 'displayDhuhr',
-    asr: 'displayAsr',
-    maghrib: 'displayMaghrib',
-    isha: 'displayIsha'
-};
 
 function setStatus(msg, type = 'loading') {
     statusBar.className = `status-bar ${type}`;
@@ -431,11 +421,11 @@ function renderAll(data) {
     const monday = data[0] || {};
     
     // Render 5 times
-    document.getElementById(displayIds.fajr).textContent = monday.fajr || '--';
-    document.getElementById(displayIds.dhuhr).textContent = monday.dhuhr || '--';
-    document.getElementById(displayIds.asr).textContent = monday.asr || '--';
-    document.getElementById(displayIds.maghrib).textContent = monday.maghrib || '--';
-    document.getElementById(displayIds.isha).textContent = monday.isha || '--';
+    document.getElementById('displayFajr').textContent = monday.fajr || '--';
+    document.getElementById('displayDhuhr').textContent = monday.dhuhr || '--';
+    document.getElementById('displayAsr').textContent = monday.asr || '--';
+    document.getElementById('displayMaghrib').textContent = monday.maghrib || '--';
+    document.getElementById('displayIsha').textContent = monday.isha || '--';
     
     // Render Friday
     const friday = data.find(d => d.day === 'Friday');
@@ -445,6 +435,27 @@ function renderAll(data) {
     } else {
         fridayBox.classList.remove('show');
     }
+}
+
+// ========================================
+// LISTEN FOR ADMIN UPDATES
+// ========================================
+function listenForUpdates() {
+    try {
+        if (typeof BroadcastChannel !== 'undefined') {
+            const channel = new BroadcastChannel('namaz_updates');
+            channel.onmessage = function(event) {
+                if (event.data && event.data.type === 'update') {
+                    setStatus('📢 New update available! Refreshing...', 'info');
+                    cacheBadge.textContent = '🔄';
+                    cacheBadge.className = 'badge';
+                    setTimeout(function() {
+                        loadData();
+                    }, 500);
+                }
+            };
+        }
+    } catch (e) {}
 }
 
 // ========================================
@@ -458,20 +469,22 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ========================================
-// AUTO REFRESH EVERY 60 SECONDS
+// AUTO REFRESH EVERY 30 SECONDS
 // ========================================
 setInterval(function() {
     loadData();
-}, 60000);
+}, 30000);
 
 // ========================================
 // INIT
 // ========================================
+listenForUpdates();
 loadData();
 
 console.log('👀 User Panel - Read Only');
 console.log('⌨️ Ctrl+R = Refresh');
-console.log('🔄 Auto-refresh every 60 seconds');
+console.log('🔄 Auto-refresh every 30 seconds');
+console.log('📡 Listening for admin updates...');
 </script>
 
 </body>
