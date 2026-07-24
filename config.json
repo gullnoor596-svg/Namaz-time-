@@ -1,58 +1,58 @@
 [
   {
     "day": "Monday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Tuesday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Wednesday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Thursday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Friday",
-    "fajr": "1:15 AM",
+    "fajr": "5:22 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Saturday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   },
   {
     "day": "Sunday",
-    "fajr": "9:20 AM",
+    "fajr": "1:30 AM",
     "dhuhr": "1:30 PM",
     "asr": "4:00 PM",
-    "maghrib": "4:30 PM",
-    "isha": "5:00 PM"
+    "maghrib": "6:30 PM",
+    "isha": "8:00 PM"
   }
 ]
