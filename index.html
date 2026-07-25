@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🕌 Namaz Timings</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #0a0a14;
+            background: #0f0f1a;
             min-height: 100vh;
-            padding: 12px;
+            padding: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -19,97 +19,113 @@
         .container {
             max-width: 750px;
             width: 100%;
-            margin: auto;
             background: rgba(255,255,255,0.04);
-            border-radius: 20px;
-            padding: 18px;
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 22px;
             border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         .header {
             text-align: center;
-            padding: 6px 0 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 18px;
         }
-        .header h1 { color: #fff; font-size: 22px; font-weight: 700; }
-        .header h1 span { color: #64ffda; }
-        .header .badge-user {
-            background: rgba(105,219,124,0.08);
+        .header h1 { color: #fff; font-size: 26px; font-weight: 700; }
+        .header h1 span { color: #00e5ff; }
+        .header .badge {
+            background: rgba(105,219,124,0.12);
             color: #69db7c;
-            padding: 2px 14px;
+            padding: 4px 16px;
             border-radius: 20px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
-            margin-top: 3px;
+            margin-top: 4px;
             display: inline-block;
-            border: 1px solid rgba(105,219,124,0.1);
+            border: 1px solid rgba(105,219,124,0.15);
         }
-        .header p { color: #8892b0; font-size: 12px; margin-top: 3px; }
+        .header p { color: #8892b0; font-size: 13px; margin-top: 4px; }
 
         .status-bar {
             background: transparent !important;
-            padding: 6px 14px;
-            margin-bottom: 10px;
+            padding: 8px 14px;
+            margin-bottom: 12px;
             color: #ccd6f6;
-            font-size: 12px;
-            transition: all 0.2s;
-            border: none !important;
-            box-shadow: none !important;
+            font-size: 13px;
+            border-left: 3px solid #fcc419;
         }
-        .status-bar.loading { color: #fcc419; }
-        .status-bar.success { color: #69db7c; }
-        .status-bar.error { color: #ff6b6b; }
-        .status-bar.update { color: #fcc419; animation: pulse 1s infinite; }
+        .status-bar.success { border-left-color: #69db7c; color: #69db7c; }
+        .status-bar.error { border-left-color: #ff6b6b; color: #ff6b6b; }
+        .status-bar.loading { border-left-color: #fcc419; color: #fcc419; }
+        .status-bar.update { border-left-color: #fcc419; color: #fcc419; animation: pulse 1s infinite; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
 
-        .action-bar {
+        /* ===== MAIN BOX ===== */
+        .main-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .main-box .box-title {
+            color: #64ffda;
+            font-size: 16px;
+            font-weight: 600;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-            gap: 4px;
+            gap: 10px;
+            margin-bottom: 14px;
         }
-        .action-bar button {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 8px;
-            color: #8892b0;
-            padding: 5px 12px;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.15s;
-            font-weight: 500;
-        }
-        .action-bar button:hover { background: rgba(255,255,255,0.06); color: #ccd6f6; border-color: rgba(255,255,255,0.08); }
-        .action-bar .badge {
-            background: rgba(105,219,124,0.06);
-            color: #69db7c;
-            padding: 2px 10px;
+        .main-box .box-title i { color: #64ffda; }
+        .main-box .box-title span {
+            background: rgba(100,255,218,0.08);
+            padding: 2px 12px;
             border-radius: 20px;
+            font-size: 10px;
+            color: #64ffda;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .time-item {
+            text-align: center;
+            padding: 8px 4px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+        .time-item label {
+            display: block;
+            color: #8892b0;
             font-size: 9px;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
-        .action-bar .badge.update-available {
-            background: rgba(252,196,25,0.06);
-            color: #fcc419;
+        .time-item .time-value {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 4px;
+            min-height: 32px;
         }
-        .action-bar .badge.error { background: rgba(255,107,107,0.06); color: #ff6b6b; }
 
         /* ===== GOLD ANIMATED FRIDAY BOX ===== */
         .friday-box {
             background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
             border: 2px solid #ffd700;
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            display: none;
-            transition: all 0.3s;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 14px;
             position: relative;
             overflow: hidden;
             animation: goldGlow 2s ease-in-out infinite;
@@ -171,23 +187,14 @@
             50% { transform: translateX(100%); }
         }
 
-        .friday-box.show { 
-            display: block; 
-            animation: goldGlow 2s ease-in-out infinite, fadeSlide 0.3s ease;
-        }
-        @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .friday-box .box-title {
             color: #ffd700;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             text-shadow: 0 0 20px rgba(255,215,0,0.2);
         }
         .friday-box .box-title i {
@@ -200,21 +207,22 @@
         }
         .friday-box .box-title span {
             background: rgba(255,215,0,0.12);
-            padding: 1px 12px;
+            padding: 2px 14px;
             border-radius: 20px;
-            font-size: 8px;
+            font-size: 10px;
             color: #ffd700;
             border: 1px solid rgba(255,215,0,0.15);
         }
+
         .friday-single {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .friday-single label {
             color: #ffd700;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -224,7 +232,7 @@
             color: #ffffff;
             font-size: 18px;
             font-weight: 600;
-            padding: 4px 16px;
+            padding: 6px 18px;
             background: rgba(255,215,0,0.06);
             border-radius: 8px;
             border: 1.5px solid rgba(255,215,0,0.15);
@@ -234,110 +242,63 @@
         .friday-single .friday-badge {
             background: rgba(255,215,0,0.08);
             color: #ffd700;
-            padding: 2px 12px;
+            padding: 3px 14px;
             border-radius: 20px;
-            font-size: 8px;
+            font-size: 10px;
             border: 1px solid rgba(255,215,0,0.08);
         }
 
-        /* ===== TIMINGS GRID ===== */
-        .timings-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .time-box {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 12px;
-            padding: 14px 8px;
-            text-align: center;
-            transition: all 0.15s ease;
-        }
-        .time-box:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(100,255,218,0.12);
-            transform: translateY(-1px);
-        }
-        .time-box label {
-            display: block;
-            color: #64ffda;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 6px;
-        }
-        .time-box .time-value {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 6px 4px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .more-box {
-            background: rgba(255,255,255,0.04);
-            border: 1px dashed rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 14px 8px;
-            text-align: center;
-            transition: all 0.15s ease;
-            cursor: pointer;
+        .action-bar {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: inherit;
+            margin: 16px 0 12px 0;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .more-box:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(100,255,218,0.2);
-            transform: scale(1.02);
+        .action-bar button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            color: #8892b0;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+            font-weight: 500;
         }
-        .more-box:active { transform: scale(0.95); }
-        .more-box .more-title { color: #64ffda; font-size: 13px; font-weight: 600; }
-        .more-box .more-sub { color: #495670; font-size: 9px; margin-top: 1px; }
-        .more-box .more-arrow { color: #495670; font-size: 11px; margin-top: 1px; display: inline-block; transition: transform 0.2s; }
-        .more-box:hover .more-arrow { transform: translateX(3px); color: #64ffda; }
+        .action-bar button:hover { background: rgba(255,255,255,0.08); color: #ccd6f6; }
+        .action-bar .badge {
+            background: rgba(105,219,124,0.08);
+            color: #69db7c;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .action-bar .badge.update {
+            background: rgba(252,196,25,0.08);
+            color: #fcc419;
+            animation: pulse 1s infinite;
+        }
 
         .footer {
             text-align: center;
-            margin-top: 12px;
+            margin-top: 14px;
             color: #495670;
-            font-size: 9px;
-            padding-top: 10px;
+            font-size: 11px;
+            padding-top: 12px;
             border-top: 1px solid rgba(255,255,255,0.04);
         }
-        .footer a { color: #64ffda; text-decoration: none; cursor: pointer; }
+        .footer a { color: #00e5ff; text-decoration: none; cursor: pointer; }
 
-        .update-bar {
-            background: rgba(252,196,25,0.06);
-            border: 1px solid rgba(252,196,25,0.1);
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 10px;
-            color: #fcc419;
-            font-size: 11px;
-            display: none;
-            text-align: center;
-        }
-        .update-bar.show { display: block; animation: fadeSlide 0.3s ease; }
-
-        @media (max-width: 550px) {
-            .timings-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-            .container { padding: 14px; }
-            .time-box .time-value { font-size: 15px; }
-            .friday-single .time-value { font-size: 15px; }
-            .header h1 { font-size: 18px; }
+        @media (max-width: 500px) {
+            .time-grid { grid-template-columns: repeat(3, 1fr); }
+            .friday-single .time-value { font-size: 15px; padding: 4px 12px; min-width: 60px; }
         }
         @media (max-width: 380px) {
-            .timings-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
-            .time-box { padding: 10px 5px; }
-            .time-box .time-value { font-size: 13px; padding: 4px 2px; }
+            .time-grid { grid-template-columns: repeat(2, 1fr); }
+            .friday-single .time-value { font-size: 14px; padding: 4px 10px; min-width: 50px; }
         }
     </style>
 </head>
@@ -346,29 +307,47 @@
 <div class="container">
     <div class="header">
         <h1>🕌 Namaz <span>Timings</span></h1>
-        <div class="badge-user">👀 Read Only</div>
-        <p>Daily Prayer Times • Auto-Update</p>
+        <div class="badge">👀 Live View</div>
+        <p>Auto-updates in real-time</p>
     </div>
 
     <div class="status-bar loading" id="statusBar">
         <span>⏳</span> Loading timings...
     </div>
 
-    <div class="update-bar" id="updateBar">
-        🔄 New timings available! Refreshing...
-    </div>
-
-    <div class="action-bar">
-        <div>
-            <button onclick="loadData()">🔄 Refresh</button>
+    <!-- ===== MAIN BOX (Monday) ===== -->
+    <div class="main-box">
+        <div class="box-title">
+            <i class="fas fa-calendar-day"></i> Monday <span>Default</span>
         </div>
-        <span class="badge" id="cacheBadge">● Live</span>
+        <div class="time-grid">
+            <div class="time-item">
+                <label>Fajr</label>
+                <div class="time-value" id="displayFajr">--</div>
+            </div>
+            <div class="time-item">
+                <label>Dhuhr</label>
+                <div class="time-value" id="displayDhuhr">--</div>
+            </div>
+            <div class="time-item">
+                <label>Asr</label>
+                <div class="time-value" id="displayAsr">--</div>
+            </div>
+            <div class="time-item">
+                <label>Maghrib</label>
+                <div class="time-value" id="displayMaghrib">--</div>
+            </div>
+            <div class="time-item">
+                <label>Isha</label>
+                <div class="time-value" id="displayIsha">--</div>
+            </div>
+        </div>
     </div>
 
     <!-- ===== GOLD ANIMATED FRIDAY BOX ===== -->
-    <div class="friday-box" id="fridayBox">
+    <div class="friday-box">
         <div class="box-title">
-            <i class="fas fa-star"></i> Friday <span>⭐ Special</span>
+            <i class="fas fa-star"></i> Friday <span>⭐ Special Day</span>
         </div>
         <div class="friday-single">
             <label>Fajr</label>
@@ -377,263 +356,201 @@
         </div>
     </div>
 
-    <div class="timings-grid" id="timingsGrid">
-        <div class="time-box">
-            <label>Fajr</label>
-            <div class="time-value" id="displayFajr">--</div>
+    <div class="action-bar">
+        <div>
+            <button onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button>
         </div>
-        <div class="time-box">
-            <label>Dhuhr</label>
-            <div class="time-value" id="displayDhuhr">--</div>
-        </div>
-        <div class="time-box">
-            <label>Asr</label>
-            <div class="time-value" id="displayAsr">--</div>
-        </div>
-        <div class="time-box">
-            <label>Maghrib</label>
-            <div class="time-value" id="displayMaghrib">--</div>
-        </div>
-        <div class="time-box">
-            <label>Isha</label>
-            <div class="time-value" id="displayIsha">--</div>
-        </div>
-        <a href="https://github.com/gullnoor596-svg/Namaz-time-" target="_blank" class="more-box">
-            <div class="more-content">
-                <div class="more-title">More</div>
-                <div class="more-sub">GitHub</div>
-                <div class="more-arrow">↗</div>
-            </div>
-        </a>
+        <span class="badge" id="cacheBadge">📡 Firebase</span>
     </div>
 
     <div class="footer">
-        <span id="updateTime">🔄 Auto-refresh every 30s</span>
+        <span id="updateTime">🔄 Live updates from Firebase</span>
+        <span style="margin-left: 12px;">•</span>
+        <a onclick="loadData()">⟳ Refresh</a>
     </div>
 </div>
 
 <script>
 // ========================================
-// USER PANEL - AUTO UPDATE
+// USER PANEL - FIREBASE REALTIME DB
 // ========================================
 
-// --- CONFIGURATION ---
-const REPO_OWNER = 'gullnoor596-svg';
-const REPO_NAME = 'Namaz-time-';
-const FILE_PATH = 'config.json';
-const BRANCH = 'main';
+// --- CONFIG ---
+const DB_URL = 'https://namaztimedata-default-rtdb.firebaseio.com/namaz.json';
 
-// GitHub Pages URL (Fast & Reliable)
-const GITHUB_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/${FILE_PATH}`;
-const RAW_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
-
-// --- DEFAULT DATA ---
-const DEFAULT_DATA = [
-    { "day": "Monday", "fajr": "5:30 AM", "dhuhr": "12:30 PM", "asr": "4:00 PM", "maghrib": "6:30 PM", "isha": "8:00 PM" },
-    { "day": "Tuesday", "fajr": "5:28 AM", "dhuhr": "12:32 PM", "asr": "4:02 PM", "maghrib": "6:32 PM", "isha": "8:02 PM" },
-    { "day": "Wednesday", "fajr": "5:26 AM", "dhuhr": "12:34 PM", "asr": "4:04 PM", "maghrib": "6:34 PM", "isha": "8:04 PM" },
-    { "day": "Thursday", "fajr": "5:24 AM", "dhuhr": "12:36 PM", "asr": "4:06 PM", "maghrib": "6:36 PM", "isha": "8:06 PM" },
-    { "day": "Friday", "fajr": "5:22 AM", "dhuhr": "12:38 PM", "asr": "4:08 PM", "maghrib": "6:38 PM", "isha": "8:08 PM" },
-    { "day": "Saturday", "fajr": "5:20 AM", "dhuhr": "12:40 PM", "asr": "4:10 PM", "maghrib": "6:40 PM", "isha": "8:10 PM" },
-    { "day": "Sunday", "fajr": "5:18 AM", "dhuhr": "12:42 PM", "asr": "4:12 PM", "maghrib": "6:42 PM", "isha": "8:12 PM" }
-];
-
-// --- STATE ---
-let currentData = [];
-let loadCounter = 0;
-let autoRefreshTimer = null;
-let lastUpdateTime = localStorage.getItem('namaz_last_update') || '';
-
-// --- DOM REFS ---
-const statusBar = document.getElementById('statusBar');
-const cacheBadge = document.getElementById('cacheBadge');
-const fridayBox = document.getElementById('fridayBox');
-const updateBar = document.getElementById('updateBar');
-const updateTime = document.getElementById('updateTime');
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const TIME_IDS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 // Display IDs
-const displayIds = {
+const DISPLAY_IDS = {
     fajr: 'displayFajr',
     dhuhr: 'displayDhuhr',
     asr: 'displayAsr',
     maghrib: 'displayMaghrib',
-    isha: 'displayIsha'
+    isha: 'displayIsha',
+    fridayFajr: 'fridayFajrDisplay'
 };
+
+// --- STATE ---
+let currentData = {};
+let isUpdating = false;
+
+const statusBar = document.getElementById('statusBar');
+const cacheBadge = document.getElementById('cacheBadge');
 
 // ========================================
 // UI FUNCTIONS
 // ========================================
 function setStatus(msg, type = 'loading') {
     statusBar.className = `status-bar ${type}`;
-    const icons = { loading: '⏳', success: '✅', error: '❌', info: 'ℹ️', update: '🔄' };
+    const icons = { loading: '⏳', success: '✅', error: '❌', warning: '⚠️', update: '🔄' };
     statusBar.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${msg}`;
 }
 
-function showUpdate(msg) {
-    updateBar.textContent = msg;
-    updateBar.classList.add('show');
-    setTimeout(() => updateBar.classList.remove('show'), 3000);
+// ========================================
+// RENDER TIMINGS
+// ========================================
+function renderTimings(data) {
+    const monday = data['Monday'] || {};
+    
+    // Render Monday timings
+    document.getElementById(DISPLAY_IDS.fajr).textContent = monday.fajr || '--';
+    document.getElementById(DISPLAY_IDS.dhuhr).textContent = monday.dhuhr || '--';
+    document.getElementById(DISPLAY_IDS.asr).textContent = monday.asr || '--';
+    document.getElementById(DISPLAY_IDS.maghrib).textContent = monday.maghrib || '--';
+    document.getElementById(DISPLAY_IDS.isha).textContent = monday.isha || '--';
+    
+    // Render Friday Fajr
+    const friday = data['Friday'] || {};
+    document.getElementById(DISPLAY_IDS.fridayFajr).textContent = friday.fajr || '--';
 }
 
 // ========================================
-// SMART LOAD DATA
+// LOAD DATA FROM FIREBASE
 // ========================================
 async function loadData() {
-    loadCounter++;
-    
-    setStatus('Loading timings...', 'loading');
-    cacheBadge.textContent = '◉';
+    setStatus('Loading from Firebase...', 'loading');
+    cacheBadge.textContent = '🔄 Loading...';
 
     try {
-        // --- STEP 1: Show cached data immediately ---
-        const cached = localStorage.getItem('namaz_backup');
-        if (cached) {
+        const response = await fetch(DB_URL, {
+            cache: 'no-cache',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+
+        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+            const hasValidData = DAYS.some(day => data[day] && typeof data[day] === 'object');
+            if (hasValidData) {
+                currentData = data;
+                renderTimings(data);
+                setStatus('✅ Live from Firebase!', 'success');
+                cacheBadge.textContent = '📡 Live';
+                cacheBadge.className = 'badge';
+                updateTimeDisplay();
+                return;
+            }
+        }
+
+        // If data invalid, use default
+        currentData = getDefaultData();
+        renderTimings(currentData);
+        setStatus('⚠️ Using default data', 'warning');
+        cacheBadge.textContent = '📂 Default';
+        cacheBadge.className = 'badge';
+
+    } catch (error) {
+        setStatus('⚠️ Error: ' + error.message, 'error');
+        // Try backup
+        const backup = localStorage.getItem('namaz_backup');
+        if (backup) {
             try {
-                const parsed = JSON.parse(cached);
-                if (Array.isArray(parsed) && parsed.length > 0) {
+                const parsed = JSON.parse(backup);
+                if (parsed && typeof parsed === 'object') {
                     currentData = parsed;
-                    renderAll(parsed);
-                    setStatus('📂 Cached timings', 'info');
+                    renderTimings(parsed);
+                    setStatus('📂 Using cached data', 'warning');
                     cacheBadge.textContent = '📂 Cached';
+                    cacheBadge.className = 'badge';
+                    return;
                 }
             } catch (e) {}
         }
-
-        // --- STEP 2: Background sync ---
-        try {
-            let data = null;
-            const url = GITHUB_PAGES_URL + '?t=' + Date.now() + '_' + loadCounter;
-            
-            const response = await fetch(url, {
-                cache: 'no-cache',
-                headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' }
-            });
-            
-            if (response.ok) {
-                data = await response.json();
-            } else {
-                const rawResponse = await fetch(RAW_URL + '?t=' + Date.now() + '_' + loadCounter, {
-                    cache: 'no-cache',
-                    headers: { 'Cache-Control': 'no-cache, no-store', 'Pragma': 'no-cache' }
-                });
-                if (rawResponse.ok) {
-                    data = await rawResponse.json();
-                }
-            }
-
-            if (data && Array.isArray(data) && data.length > 0) {
-                // Check if data changed
-                const currentStr = JSON.stringify(currentData);
-                const newStr = JSON.stringify(data);
-                
-                if (currentStr !== newStr) {
-                    currentData = data;
-                    localStorage.setItem('namaz_backup', JSON.stringify(data));
-                    renderAll(data);
-                    setStatus('✅ Updated! ' + data.length + ' days', 'success');
-                    cacheBadge.textContent = '● Live';
-                    showUpdate('✅ New timings loaded!');
-                } else {
-                    setStatus('✅ ' + data.length + ' days (up to date)', 'success');
-                    cacheBadge.textContent = '● Live';
-                }
-            }
-        } catch (bgError) {
-            if (currentData.length === 0) {
-                currentData = DEFAULT_DATA;
-                localStorage.setItem('namaz_backup', JSON.stringify(DEFAULT_DATA));
-                renderAll(DEFAULT_DATA);
-                setStatus('📂 Default timings', 'warning');
-                cacheBadge.textContent = '● Default';
-            } else {
-                setStatus('📂 Using cached timings', 'info');
-            }
-        }
-
-        // Update last update time
-        const now = new Date();
-        updateTime.textContent = '🔄 Last update: ' + now.toLocaleTimeString();
-
-    } catch (error) {
-        setStatus('⚠️ ' + error.message, 'error');
-        cacheBadge.textContent = '◉ Error';
-        cacheBadge.className = 'badge error';
-        
-        if (currentData.length === 0) {
-            currentData = DEFAULT_DATA;
-            localStorage.setItem('namaz_backup', JSON.stringify(DEFAULT_DATA));
-            renderAll(DEFAULT_DATA);
-            setStatus('📂 Default timings', 'warning');
-            cacheBadge.textContent = '● Default';
-            cacheBadge.className = 'badge';
-        }
+        currentData = getDefaultData();
+        renderTimings(currentData);
+        setStatus('📂 Default data (offline)', 'warning');
+        cacheBadge.textContent = '📂 Offline';
+        cacheBadge.className = 'badge';
     }
 }
 
 // ========================================
-// RENDER - READ ONLY
+// GET DEFAULT DATA
 // ========================================
-function renderAll(data) {
-    const monday = data[0] || {};
-    
-    // Render 5 times
-    document.getElementById(displayIds.fajr).textContent = monday.fajr || '--';
-    document.getElementById(displayIds.dhuhr).textContent = monday.dhuhr || '--';
-    document.getElementById(displayIds.asr).textContent = monday.asr || '--';
-    document.getElementById(displayIds.maghrib).textContent = monday.maghrib || '--';
-    document.getElementById(displayIds.isha).textContent = monday.isha || '--';
-    
-    // Render Friday
-    const friday = data.find(d => d.day === 'Friday');
-    if (friday) {
-        document.getElementById('fridayFajrDisplay').textContent = friday.fajr || '--';
-        fridayBox.classList.add('show');
-    } else {
-        fridayBox.classList.remove('show');
-    }
+function getDefaultData() {
+    return {
+        "Monday": { "fajr": "5:30 AM", "dhuhr": "12:30 PM", "asr": "4:00 PM", "maghrib": "6:30 PM", "isha": "8:00 PM" },
+        "Tuesday": { "fajr": "5:28 AM", "dhuhr": "12:32 PM", "asr": "4:02 PM", "maghrib": "6:32 PM", "isha": "8:02 PM" },
+        "Wednesday": { "fajr": "5:26 AM", "dhuhr": "12:34 PM", "asr": "4:04 PM", "maghrib": "6:34 PM", "isha": "8:04 PM" },
+        "Thursday": { "fajr": "5:24 AM", "dhuhr": "12:36 PM", "asr": "4:06 PM", "maghrib": "6:36 PM", "isha": "8:06 PM" },
+        "Friday": { "fajr": "5:22 AM", "dhuhr": "12:38 PM", "asr": "4:08 PM", "maghrib": "6:38 PM", "isha": "8:08 PM" },
+        "Saturday": { "fajr": "5:20 AM", "dhuhr": "12:40 PM", "asr": "4:10 PM", "maghrib": "6:40 PM", "isha": "8:10 PM" },
+        "Sunday": { "fajr": "5:18 AM", "dhuhr": "12:42 PM", "asr": "4:12 PM", "maghrib": "6:42 PM", "isha": "8:12 PM" }
+    };
+}
+
+// ========================================
+// UPDATE TIME DISPLAY
+// ========================================
+function updateTimeDisplay() {
+    const now = new Date();
+    document.getElementById('updateTime').textContent = '🔄 Last update: ' + now.toLocaleTimeString();
 }
 
 // ========================================
 // LISTEN FOR ADMIN UPDATES
 // ========================================
 function listenForUpdates() {
+    // BroadcastChannel for same browser
     try {
         if (typeof BroadcastChannel !== 'undefined') {
             const channel = new BroadcastChannel('namaz_updates');
-            channel.onmessage = function(event) {
-                if (event.data && event.data.type === 'update') {
-                    setStatus('🔄 New update from admin!', 'update');
-                    cacheBadge.textContent = '🔄';
-                    cacheBadge.className = 'badge update-available';
-                    showUpdate('🔄 Admin updated timings! Refreshing...');
+            channel.onmessage = function(e) {
+                if (e.data?.type === 'update') {
+                    cacheBadge.textContent = '🔄 Updating...';
+                    cacheBadge.className = 'badge update';
+                    setStatus('📢 New timings available!', 'update');
                     setTimeout(loadData, 500);
                 }
             };
         }
     } catch (e) {}
 
-    // Also listen for localStorage changes (fallback)
+    // localStorage for cross-tab
     window.addEventListener('storage', function(e) {
-        if (e.key === 'namaz_update_flag' || e.key === 'namaz_version') {
-            const version = localStorage.getItem('namaz_version');
-            const lastUpdate = localStorage.getItem('namaz_last_update');
-            if (lastUpdate && lastUpdate !== lastUpdateTime) {
-                lastUpdateTime = lastUpdate;
-                setStatus('🔄 Update detected!', 'update');
-                setTimeout(loadData, 300);
-            }
+        if (e.key === 'namaz_update_flag' && e.newValue === 'true') {
+            localStorage.removeItem('namaz_update_flag');
+            cacheBadge.textContent = '🔄 Updating...';
+            cacheBadge.className = 'badge update';
+            setStatus('📢 Update detected!', 'update');
+            setTimeout(loadData, 300);
         }
     });
 }
 
 // ========================================
-// CHECK FOR UPDATES PERIODICALLY
+// AUTO REFRESH
 // ========================================
+let autoRefreshTimer = null;
+
 function startAutoRefresh() {
     if (autoRefreshTimer) clearInterval(autoRefreshTimer);
     autoRefreshTimer = setInterval(() => {
         loadData();
-    }, 30000); // Every 30 seconds
+    }, 30000);
 }
 
 // ========================================
@@ -653,9 +570,8 @@ listenForUpdates();
 loadData();
 startAutoRefresh();
 
-console.log('👀 User Panel - Auto-Update');
-console.log('🔄 Auto-refresh every 30s');
-console.log('📡 Listening for admin updates...');
+console.log('👀 User Panel - Real-time Updates');
+console.log('📌 Data URL:', DB_URL);
 console.log('⌨️ Ctrl+R = Refresh');
 </script>
 
