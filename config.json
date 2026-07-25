@@ -1,58 +1,9 @@
-[
-  {
-    "day": "Monday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Tuesday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Wednesday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Thursday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Friday",
-    "fajr": "1:20 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Saturday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
-  },
-  {
-    "day": "Sunday",
-    "fajr": "8:30 AM",
-    "dhuhr": "2:30 PM",
-    "asr": "4:00 PM",
-    "maghrib": "6:30 PM",
-    "isha": "8:00 PM"
+{
+  "notification": {
+    "title": "🕌 Namaz Time Updated",
+    "message": "Admin ne namaz timing update ki hai",
+    "version": "1",
+    "sound": "default",
+    "vibrate": true
   }
-]
+}
