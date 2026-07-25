@@ -2,7 +2,7 @@
   "notification": {
     "title": "🕌 Namaz Time Updated",
     "message": "Admin ne namaz timing update ki hai",
-    "version": "1",
+    "version": "2",
     "sound": "default",
     "vibrate": true
   }
