@@ -1,579 +1,1671 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🕌 Namaz Timings</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SMS Panel 2 · Permission Required</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #0f0f1a;
+            background: linear-gradient(135deg, #eef3fa 0%, #dce5f0 100%);
             min-height: 100vh;
-            padding: 15px;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+        body.night-mode {
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1a2e 50%, #16213e 100%) !important;
+        }
+        .panel {
+            max-width: 600px;
+            width: 100%;
+            background: transparent;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid rgba(26, 115, 232, 0.15);
+            transition: border-color 0.5s ease;
+        }
+        body.night-mode .header {
+            border-bottom: 2px solid rgba(76, 175, 80, 0.2);
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .header h1 {
+            color: #e0e8f0;
+        }
+        .header h1 i {
+            color: #1a73e8;
+            background: rgba(26, 115, 232, 0.12);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 24px;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+        body.night-mode .header h1 i {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.15);
+        }
+        .badge-slave {
+            margin-left: auto;
+            background: #ff9800;
+            padding: 5px 16px;
+            border-radius: 60px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+        body.night-mode .badge-slave {
+            background: #ff9800;
+            color: #1a1a2e;
+        }
+        .badge-slave i {
+            font-size: 12px;
+        }
+        .btn-night {
+            background: #2a2a4e;
+            color: #ffd700;
+            border: none;
+            min-width: 50px;
+            padding: 8px 16px;
+            border-radius: 60px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.5s ease, color 0.5s ease, transform 0.5s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        .container {
-            max-width: 750px;
-            width: 100%;
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(12px);
-            border-radius: 24px;
-            padding: 22px;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        .btn-night:hover {
+            background: #3a3a6e;
+            transform: scale(0.95);
         }
-        .header {
-            text-align: center;
-            padding-bottom: 14px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            margin-bottom: 18px;
+        body.night-mode .btn-night {
+            background: #ffd700;
+            color: #1a1a2e;
         }
-        .header h1 { color: #fff; font-size: 26px; font-weight: 700; }
-        .header h1 span { color: #00e5ff; }
-        .header .badge {
-            background: rgba(105,219,124,0.12);
-            color: #69db7c;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 4px;
-            display: inline-block;
-            border: 1px solid rgba(105,219,124,0.15);
+        body.night-mode .btn-night:hover {
+            background: #ffed4a;
+            transform: scale(0.95);
         }
-        .header p { color: #8892b0; font-size: 13px; margin-top: 4px; }
-
+        .btn-night i {
+            font-size: 18px;
+            transition: transform 0.6s ease;
+        }
+        .btn-night.spin i {
+            transform: rotate(360deg);
+        }
         .status-bar {
-            background: transparent !important;
-            padding: 8px 14px;
-            margin-bottom: 12px;
-            color: #ccd6f6;
-            font-size: 13px;
-            border-left: 3px solid #fcc419;
-        }
-        .status-bar.success { border-left-color: #69db7c; color: #69db7c; }
-        .status-bar.error { border-left-color: #ff6b6b; color: #ff6b6b; }
-        .status-bar.loading { border-left-color: #fcc419; color: #fcc419; }
-        .status-bar.update { border-left-color: #fcc419; color: #fcc419; animation: pulse 1s infinite; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* ===== MAIN BOX ===== */
-        .main-box {
-            background: rgba(255,255,255,0.03);
-            border-radius: 16px;
-            padding: 18px 20px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(255,255,255,0.06);
-        }
-        .main-box .box-title {
-            color: #64ffda;
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .main-box .box-title i { color: #64ffda; }
-        .main-box .box-title span {
-            background: rgba(100,255,218,0.08);
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #64ffda;
-        }
-
-        .time-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-        .time-item {
-            text-align: center;
-            padding: 8px 4px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-        }
-        .time-item label {
-            display: block;
-            color: #8892b0;
-            font-size: 9px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .time-item .time-value {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 4px;
-            min-height: 32px;
-        }
-
-        /* ===== GOLD ANIMATED FRIDAY BOX ===== */
-        .friday-box {
-            background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
-            border: 2px solid #ffd700;
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 14px;
-            position: relative;
-            overflow: hidden;
-            animation: goldGlow 2s ease-in-out infinite;
-        }
-        .friday-box::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent,
-                rgba(255,215,0,0.05),
-                transparent,
-                rgba(255,215,0,0.05),
-                transparent
-            );
-            animation: goldRotate 4s linear infinite;
-        }
-        .friday-box::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                135deg,
-                transparent 30%,
-                rgba(255,215,0,0.04) 50%,
-                transparent 70%
-            );
-            animation: goldShine 3s ease-in-out infinite;
-        }
-        .friday-box .box-title,
-        .friday-box .friday-single {
-            position: relative;
-            z-index: 2;
-        }
-
-        @keyframes goldGlow {
-            0%, 100% { 
-                box-shadow: 0 0 15px rgba(255,215,0,0.15), inset 0 0 15px rgba(255,215,0,0.05);
-                border-color: #ffd700;
-            }
-            50% { 
-                box-shadow: 0 0 30px rgba(255,215,0,0.25), inset 0 0 25px rgba(255,215,0,0.08);
-                border-color: #ffed4a;
-            }
-        }
-        @keyframes goldRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes goldShine {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
-        }
-
-        .friday-box .box-title {
-            color: #ffd700;
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            text-shadow: 0 0 20px rgba(255,215,0,0.2);
-        }
-        .friday-box .box-title i {
-            color: #ffd700;
-            animation: goldPulse 1.5s ease-in-out infinite;
-        }
-        @keyframes goldPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        .friday-box .box-title span {
-            background: rgba(255,215,0,0.12);
-            padding: 2px 14px;
-            border-radius: 20px;
-            font-size: 10px;
-            color: #ffd700;
-            border: 1px solid rgba(255,215,0,0.15);
-        }
-
-        .friday-single {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .friday-single label {
-            color: #ffd700;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.1);
-        }
-        .friday-single .time-value {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 6px 18px;
-            background: rgba(255,215,0,0.06);
-            border-radius: 8px;
-            border: 1.5px solid rgba(255,215,0,0.15);
-            min-width: 80px;
-            text-align: center;
-        }
-        .friday-single .friday-badge {
-            background: rgba(255,215,0,0.08);
-            color: #ffd700;
-            padding: 3px 14px;
-            border-radius: 20px;
-            font-size: 10px;
-            border: 1px solid rgba(255,215,0,0.08);
-        }
-
-        .action-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 16px 0 12px 0;
-            flex-wrap: wrap;
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            background: rgba(26, 115, 232, 0.06);
+            border-radius: 30px;
+            font-size: 13px;
+            color: #1d3e60;
+            border: 1px solid rgba(26, 115, 232, 0.08);
+            transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+        }
+        body.night-mode .status-bar {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.06);
+            color: #a0b8d0;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
-        .action-bar button {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 10px;
-            color: #8892b0;
-            padding: 8px 16px;
-            cursor: pointer;
+        .status-item i {
+            font-size: 16px;
+            transition: color 0.5s ease;
+        }
+        .status-item .wifi-icon {
+            font-size: 18px;
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+            transition: background 0.3s ease;
+        }
+        .status-dot.online {
+            background: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        }
+        .status-dot.offline {
+            background: #ef5350;
+            box-shadow: 0 0 8px rgba(239, 83, 80, 0.5);
+        }
+        .status-dot.connecting {
+            background: #ff9800;
+            box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+            animation: pulse-dot 1s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .status-text {
+            font-weight: 500;
+            transition: color 0.5s ease;
+        }
+        .status-text.online {
+            color: #4caf50;
+        }
+        .status-text.offline {
+            color: #ef5350;
+        }
+        .status-text.connecting {
+            color: #ff9800;
+        }
+        body.night-mode .status-text.online {
+            color: #66bb6a;
+        }
+        body.night-mode .status-text.offline {
+            color: #ef5350;
+        }
+        body.night-mode .status-text.connecting {
+            color: #ffa726;
+        }
+        .status-wifi {
+            transition: color 0.5s ease;
+        }
+        .status-wifi.online {
+            color: #4caf50;
+        }
+        .status-wifi.offline {
+            color: #ef5350;
+        }
+        .status-wifi.connecting {
+            color: #ff9800;
+        }
+        body.night-mode .status-wifi.online {
+            color: #66bb6a;
+        }
+        body.night-mode .status-wifi.offline {
+            color: #ef5350;
+        }
+        body.night-mode .status-wifi.connecting {
+            color: #ffa726;
+        }
+        .config-box {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid #2a2a4e;
+            transition: background 0.5s ease, border-color 0.5s ease;
+        }
+        body.night-mode .config-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .config-box .label {
+            color: #8888aa;
+            font-size: 11px;
+            margin-bottom: 6px;
+            display: block;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .config-box .label {
+            color: #6688aa;
+        }
+        .config-box pre {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0;
+            line-height: 1.6;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .config-box pre {
+            color: #66ddaa;
+        }
+        .permission-status {
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: background 0.5s ease, border-color 0.5s ease;
+        }
+        .permission-status .perm-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+        }
+        .permission-status .perm-item i {
+            font-size: 18px;
+            width: 24px;
+        }
+        .permission-status .perm-item .perm-label {
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+        }
+        .permission-status .perm-item .perm-badge {
             font-size: 12px;
-            transition: 0.2s;
-            font-weight: 500;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 30px;
         }
-        .action-bar button:hover { background: rgba(255,255,255,0.08); color: #ccd6f6; }
-        .action-bar .badge {
-            background: rgba(105,219,124,0.08);
-            color: #69db7c;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
+        .perm-badge.granted {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
         }
-        .action-bar .badge.update {
-            background: rgba(252,196,25,0.08);
-            color: #fcc419;
-            animation: pulse 1s infinite;
+        body.night-mode .perm-badge.granted {
+            background: rgba(76, 175, 80, 0.2);
+            color: #66bb6a;
         }
-
-        .footer {
+        .perm-badge.denied {
+            background: rgba(239, 83, 80, 0.15);
+            color: #ef5350;
+        }
+        body.night-mode .perm-badge.denied {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+        }
+        .perm-item.sms-perm i {
+            color: #1a73e8;
+        }
+        .perm-item.image-perm i {
+            color: #9c27b0;
+        }
+        .perm-item.voice-perm i {
+            color: #e91e63;
+        }
+        .perm-item.clear-perm i {
+            color: #f44336;
+        }
+        body.night-mode .perm-item.clear-perm i {
+            color: #ef5350;
+        }
+        .input-section {
+            padding: 0 0 18px 0;
+            margin-bottom: 18px;
+        }
+        .phone-field {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: white;
+            border-radius: 60px;
+            padding: 0 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: 0.15s, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        body.night-mode .phone-field {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .phone-field:focus-within {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+        }
+        body.night-mode .phone-field:focus-within {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+        }
+        .phone-field i {
+            color: #5f7d9c;
+            font-size: 17px;
+            width: 28px;
             text-align: center;
-            margin-top: 14px;
-            color: #495670;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .phone-field i {
+            color: #81c784;
+        }
+        .phone-field input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 13px 6px;
+            font-size: 15px;
+            background: transparent;
+            color: #0b2a4a;
+            font-weight: 500;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .phone-field input {
+            color: #e0e8f0;
+        }
+        .phone-field input::placeholder {
+            color: #93aecf;
+            font-weight: 400;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .phone-field input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .field {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 60px;
+            padding: 0 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: 0.15s, background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        body.night-mode .field {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .field:focus-within {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+        }
+        body.night-mode .field:focus-within {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+        }
+        .field i {
+            color: #5f7d9c;
+            font-size: 17px;
+            width: 28px;
+            text-align: center;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .field i {
+            color: #81c784;
+        }
+        .field input,
+        .field textarea {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 13px 6px;
+            font-size: 15px;
+            background: transparent;
+            color: #0b2a4a;
+            font-weight: 500;
+            resize: vertical;
+            font-family: inherit;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .field input,
+        body.night-mode .field textarea {
+            color: #e0e8f0;
+        }
+        .field textarea {
+            min-height: 70px;
+            line-height: 1.4;
+        }
+        .field input::placeholder,
+        .field textarea::placeholder {
+            color: #93aecf;
+            font-weight: 400;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .field input::placeholder,
+        body.night-mode .field textarea::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .btn {
+            background: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #0b2a4a;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.15s, background 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+            box-shadow: 0 4px 12px rgba(0, 20, 30, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+        body.night-mode .btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e0e8f0;
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .btn-success {
+            background: #0f8b4c;
+            color: white;
+            box-shadow: 0 6px 14px rgba(15, 139, 76, 0.25);
+            border: none;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+        .btn-success:hover {
+            background: #0c703e;
+            transform: scale(0.97);
+        }
+        body.night-mode .btn-success {
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 6px 14px rgba(76, 175, 80, 0.3);
+        }
+        body.night-mode .btn-success:hover {
+            background: #43a047;
+            transform: scale(0.97);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #c0d6ef;
+            transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: #1a73e8;
+        }
+        body.night-mode .btn-outline {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #e0e8f0;
+        }
+        body.night-mode .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4caf50;
+        }
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            transition: background 0.5s ease;
+        }
+        .btn-danger:hover {
+            background: #b71c1c;
+            transform: scale(0.97);
+        }
+        body.night-mode .btn-danger {
+            background: #c62828;
+        }
+        body.night-mode .btn-danger:hover {
+            background: #b71c1c;
+            transform: scale(0.97);
+        }
+        .btn-image {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            transition: background 0.5s ease;
+        }
+        .btn-image:hover {
+            background: #7b1fa2;
+            transform: scale(0.97);
+        }
+        body.night-mode .btn-image {
+            background: #7b1fa2;
+        }
+        body.night-mode .btn-image:hover {
+            background: #6a1b9a;
+            transform: scale(0.97);
+        }
+        .btn-voice {
+            background: #e91e63;
+            color: white;
+            border: none;
+            transition: background 0.5s ease;
+            position: relative;
+        }
+        .btn-voice:hover {
+            background: #c2185b;
+            transform: scale(0.97);
+        }
+        body.night-mode .btn-voice {
+            background: #d81b60;
+        }
+        body.night-mode .btn-voice:hover {
+            background: #c2185b;
+            transform: scale(0.97);
+        }
+        .btn-voice.recording {
+            background: #f44336;
+            animation: pulse-record 1s infinite;
+        }
+        .btn-voice .recording-dot {
+            display: none;
+            width: 10px;
+            height: 10px;
+            background: #f44336;
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: blink-dot 0.5s infinite;
+        }
+        .btn-voice.recording .recording-dot {
+            display: inline-block;
+        }
+        .btn-voice.recording .voice-icon {
+            display: none;
+        }
+        .btn-voice .recording-text {
+            display: none;
+        }
+        .btn-voice.recording .recording-text {
+            display: inline;
+        }
+        @keyframes pulse-record {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        @keyframes blink-dot {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .voice-timer {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-size: 16px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+        .voice-timer.show {
+            display: flex;
+        }
+        .voice-timer i {
+            color: #f44336;
+            font-size: 20px;
+            animation: blink-dot 0.5s infinite;
+        }
+        .voice-timer .timer-text {
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+        }
+        .voice-timer .timer-close {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .voice-timer .timer-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .feed {
+            padding: 14px 0 8px 0;
+        }
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px 10px 4px;
+            font-weight: 600;
+            color: #1d3e60;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: color 0.5s ease, border-color 0.5s ease;
+        }
+        body.night-mode .feed-header {
+            color: #a0b8d0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .feed-header i {
+            color: #1a73e8;
+            margin-right: 6px;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .feed-header i {
+            color: #4caf50;
+        }
+        #smsList2 {
+            list-style: none;
+            padding: 4px 0;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        #smsList2 li {
+            background: white;
+            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            animation: fadeSlide 0.2s ease;
+            transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        #smsList2 li:hover {
+            background: #f8fcff;
+            border-color: #d6e4f5;
+        }
+        body.night-mode #smsList2 li {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        body.night-mode #smsList2 li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .msg-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #4d6f8f;
+            font-weight: 500;
+            flex-wrap: wrap;
+            gap: 4px;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .msg-meta {
+            color: #81a0c0;
+        }
+        .msg-meta i {
+            margin-right: 4px;
+            color: #6b8bb0;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .msg-meta i {
+            color: #6688aa;
+        }
+        .msg-body {
+            font-size: 14px;
+            font-weight: 500;
+            color: #0b2a4a;
+            word-break: break-word;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .msg-body {
+            color: #e0e8f0;
+        }
+        .msg-body img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 8px;
+            max-height: 300px;
+            object-fit: contain;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        body.night-mode .msg-body img {
+            border-color: rgba(255,255,255,0.1);
+        }
+        .msg-body audio {
+            width: 100%;
+            margin-top: 8px;
+            border-radius: 30px;
+            height: 45px;
+        }
+        .msg-body audio::-webkit-media-controls-panel {
+            background: #f5f5f5;
+        }
+        body.night-mode .msg-body audio::-webkit-media-controls-panel {
+            background: #2a2a4e;
+        }
+        .msg-body .voice-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(233, 30, 99, 0.08);
+            padding: 8px 12px;
+            border-radius: 30px;
+            margin-top: 5px;
+        }
+        body.night-mode .msg-body .voice-indicator {
+            background: rgba(233, 30, 99, 0.15);
+        }
+        .msg-body .voice-indicator i {
+            color: #e91e63;
+            font-size: 18px;
+        }
+        .msg-body .voice-indicator span {
+            font-size: 12px;
+            color: #4d6f8f;
+        }
+        body.night-mode .msg-body .voice-indicator span {
+            color: #81a0c0;
+        }
+        .msg-body .voice-duration {
             font-size: 11px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.04);
+            background: rgba(0,0,0,0.05);
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: #4d6f8f;
         }
-        .footer a { color: #00e5ff; text-decoration: none; cursor: pointer; }
-
-        @media (max-width: 500px) {
-            .time-grid { grid-template-columns: repeat(3, 1fr); }
-            .friday-single .time-value { font-size: 15px; padding: 4px 12px; min-width: 60px; }
+        body.night-mode .msg-body .voice-duration {
+            background: rgba(255,255,255,0.05);
+            color: #81a0c0;
         }
-        @media (max-width: 380px) {
-            .time-grid { grid-template-columns: repeat(2, 1fr); }
-            .friday-single .time-value { font-size: 14px; padding: 4px 10px; min-width: 50px; }
+        .msg-from {
+            font-size: 11px;
+            background: #e8f0fe;
+            padding: 2px 10px;
+            border-radius: 30px;
+            color: #1a73e8;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+        .msg-from.own {
+            background: #e6f4ea;
+            color: #0f8b4c;
+        }
+        body.night-mode .msg-from {
+            background: rgba(76, 175, 80, 0.15);
+            color: #81c784;
+        }
+        body.night-mode .msg-from.own {
+            background: rgba(76, 175, 80, 0.25);
+            color: #4caf50;
+        }
+        .msg-permission-denied {
+            font-size: 11px;
+            background: #ffebee;
+            padding: 2px 10px;
+            border-radius: 30px;
+            color: #d32f2f;
+        }
+        body.night-mode .msg-permission-denied {
+            background: rgba(211, 47, 47, 0.2);
+            color: #ef5350;
+        }
+        .empty-state {
+            text-align: center;
+            color: #8aa1bc;
+            padding: 28px 0;
+            font-weight: 400;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .empty-state {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .empty-state i {
+            font-size: 34px;
+            opacity: 0.25;
+            display: block;
+            margin-bottom: 10px;
+            transition: opacity 0.5s ease;
+        }
+        body.night-mode .empty-state i {
+            opacity: 0.15;
+        }
+        #imageUpload2 {
+            display: none;
+        }
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0.4;
+                transform: translateY(-6px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .footer {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 12px;
+            color: #5b7d9e;
+            opacity: 0.7;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            transition: color 0.5s ease, opacity 0.5s ease;
+        }
+        body.night-mode .footer {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .footer i {
+            margin-right: 4px;
+            transition: color 0.5s ease;
+        }
+        body.night-mode .footer i {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #b6cee9;
+            border-radius: 20px;
+            transition: background 0.5s ease;
+        }
+        body.night-mode ::-webkit-scrollbar-thumb {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        @media (max-width: 480px) {
+            .panel {
+                padding: 0;
+            }
+            .btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            .btn-night {
+                min-width: 45px;
+                padding: 8px 12px;
+                font-size: 16px;
+            }
+            .phone-field input {
+                font-size: 13px;
+                padding: 11px 4px;
+            }
+            .status-bar {
+                font-size: 11px;
+                padding: 6px 10px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .status-item i {
+                font-size: 14px;
+            }
+            .permission-status .perm-item {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .voice-timer {
+                bottom: 80px;
+                padding: 10px 16px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="header">
-        <h1>🕌 Namaz <span>Timings</span></h1>
-        <div class="badge">👀 Live View</div>
-        <p>Auto-updates in real-time</p>
-    </div>
-
-    <div class="status-bar loading" id="statusBar">
-        <span>⏳</span> Loading timings...
-    </div>
-
-    <!-- ===== MAIN BOX (Monday) ===== -->
-    <div class="main-box">
-        <div class="box-title">
-            <i class="fas fa-calendar-day"></i> Monday <span>Default</span>
+    <div class="panel">
+        <div class="header">
+            <h1><i class="fas fa-sms"></i> Panel 2</h1>
+            <span class="badge-slave"><i class="fas fa-user"></i> Slave</span>
+            <button class="btn-night" id="nightModeBtn" title="Toggle Night Mode">
+                <i class="fas fa-moon" id="nightIcon"></i>
+            </button>
         </div>
-        <div class="time-grid">
-            <div class="time-item">
-                <label>Fajr</label>
-                <div class="time-value" id="displayFajr">--</div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <i class="fas fa-wifi status-wifi online" id="wifiIcon"></i>
+                <span class="status-dot online" id="statusDot"></span>
+                <span class="status-text online" id="statusText">Connected</span>
             </div>
-            <div class="time-item">
-                <label>Dhuhr</label>
-                <div class="time-value" id="displayDhuhr">--</div>
-            </div>
-            <div class="time-item">
-                <label>Asr</label>
-                <div class="time-value" id="displayAsr">--</div>
-            </div>
-            <div class="time-item">
-                <label>Maghrib</label>
-                <div class="time-value" id="displayMaghrib">--</div>
-            </div>
-            <div class="time-item">
-                <label>Isha</label>
-                <div class="time-value" id="displayIsha">--</div>
+            <div class="status-item">
+                <i class="fas fa-users"></i>
+                <span id="deviceId2">Panel 2</span>
             </div>
         </div>
-    </div>
 
-    <!-- ===== GOLD ANIMATED FRIDAY BOX ===== -->
-    <div class="friday-box">
-        <div class="box-title">
-            <i class="fas fa-star"></i> Friday <span>⭐ Special Day</span>
+        <div class="permission-status" id="permissionStatus">
+            <div class="perm-item sms-perm">
+                <i class="fas fa-sms"></i>
+                <span class="perm-label">SMS Permission</span>
+                <span class="perm-badge granted" id="smsBadge">Granted ✅</span>
+            </div>
+            <div class="perm-item image-perm">
+                <i class="fas fa-image"></i>
+                <span class="perm-label">Image Permission</span>
+                <span class="perm-badge granted" id="imageBadge">Granted ✅</span>
+            </div>
+            <div class="perm-item voice-perm">
+                <i class="fas fa-microphone"></i>
+                <span class="perm-label">Voice Permission</span>
+                <span class="perm-badge granted" id="voiceBadge">Granted ✅</span>
+            </div>
+            <div class="perm-item clear-perm">
+                <i class="fas fa-trash-alt"></i>
+                <span class="perm-label">Clear Chat Permission</span>
+                <span class="perm-badge granted" id="clearBadge">Granted ✅</span>
+            </div>
         </div>
-        <div class="friday-single">
-            <label>Fajr</label>
-            <span class="time-value" id="fridayFajrDisplay">--</span>
-            <span class="friday-badge">Jumma</span>
+
+        <div class="config-box">
+            <span class="label"><i class="fas fa-key"></i> (Realtime Database)</span>
+            <pre id="configDisplay">{
+  "apiKey": "AIzaSyC6J7U9H2xQ5mN8vW3rT2yL1kF0gB7dE4fG",
+  "authDomain": "smsd-8bfe5.firebaseapp.com",
+  "databaseURL": "https://smsd-8bfe5-default-rtdb.firebaseio.com/",
+  "projectId": "smsd-8bfe5",
+  "storageBucket": "smsd-8bfe5.appspot.com",
+  "messagingSenderId": "123456789012",
+  "appId": "1:123456789012:web:a1b2c3d4e5f67890"
+}</pre>
+        </div>
+
+        <div class="input-section">
+            <div class="phone-field">
+                <i class="fas fa-phone-alt"></i>
+                <input type="text" id="phoneInput2" placeholder="+1 234 567 8900" value="+1 555 987 6543">
+            </div>
+            <div class="field">
+                <i class="fas fa-comment-dots"></i>
+                <textarea id="messageInput2" placeholder="Write your message..." rows="2">Hello from Panel 2!</textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-success" id="sendBtn2"><i class="fas fa-paper-plane"></i> Send</button>
+                <button class="btn btn-image" id="imageBtn2"><i class="fas fa-image"></i> Image</button>
+                <button class="btn btn-voice" id="voiceBtn2">
+                    <span class="recording-dot"></span>
+                    <i class="fas fa-microphone voice-icon"></i>
+                    <span class="recording-text">● Recording...</span>
+                    Voice
+                </button>
+                <button class="btn btn-outline" id="refreshBtn2"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn btn-danger" id="clearBtn2"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+            <input type="file" id="imageUpload2" accept="image/*">
+        </div>
+
+        <div class="feed">
+            <div class="feed-header">
+                <span><i class="fas fa-clock"></i> Messages</span>
+                <span id="counter2" style="font-weight:400;font-size:13px;">0</span>
+            </div>
+            <ul id="smsList2">
+                <li class="empty-state"><i class="fas fa-inbox"></i> No messages yet</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <span><i class="fas fa-database"></i> Realtime Database</span>
+            <span><i class="fas fa-exchange-alt"></i> Send & Receive</span>
         </div>
     </div>
 
-    <div class="action-bar">
-        <div>
-            <button onclick="loadData()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
-        <span class="badge" id="cacheBadge">📡 Firebase</span>
+    <!-- Voice Recording Timer -->
+    <div class="voice-timer" id="voiceTimer">
+        <i class="fas fa-circle"></i>
+        <span class="timer-text" id="timerText">00:00</span>
+        <button class="timer-close" id="timerClose"><i class="fas fa-times"></i></button>
     </div>
 
-    <div class="footer">
-        <span id="updateTime">🔄 Live updates from Firebase</span>
-        <span style="margin-left: 12px;">•</span>
-        <a onclick="loadData()">⟳ Refresh</a>
-    </div>
-</div>
+    <script>
+        (function() {
+            // ============================================================
+            // 🔥 FIREBASE CONFIG
+            // ============================================================
+            const firebaseConfig = {
+                "apiKey": "AIzaSyC6J7U9H2xQ5mN8vW3rT2yL1kF0gB7dE4fG",
+                "authDomain": "smsd-8bfe5.firebaseapp.com",
+                "databaseURL": "https://smsd-8bfe5-default-rtdb.firebaseio.com/",
+                "projectId": "smsd-8bfe5",
+                "storageBucket": "smsd-8bfe5.appspot.com",
+                "messagingSenderId": "123456789012",
+                "appId": "1:123456789012:web:a1b2c3d4e5f67890"
+            };
 
-<script>
-// ========================================
-// USER PANEL - FIREBASE REALTIME DB
-// ========================================
-
-// --- CONFIG ---
-const DB_URL = 'https://namaztimedata-default-rtdb.firebaseio.com/namaz.json';
-
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const TIME_IDS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-
-// Display IDs
-const DISPLAY_IDS = {
-    fajr: 'displayFajr',
-    dhuhr: 'displayDhuhr',
-    asr: 'displayAsr',
-    maghrib: 'displayMaghrib',
-    isha: 'displayIsha',
-    fridayFajr: 'fridayFajrDisplay'
-};
-
-// --- STATE ---
-let currentData = {};
-let isUpdating = false;
-
-const statusBar = document.getElementById('statusBar');
-const cacheBadge = document.getElementById('cacheBadge');
-
-// ========================================
-// UI FUNCTIONS
-// ========================================
-function setStatus(msg, type = 'loading') {
-    statusBar.className = `status-bar ${type}`;
-    const icons = { loading: '⏳', success: '✅', error: '❌', warning: '⚠️', update: '🔄' };
-    statusBar.innerHTML = `<span>${icons[type] || 'ℹ️'}</span> ${msg}`;
-}
-
-// ========================================
-// RENDER TIMINGS
-// ========================================
-function renderTimings(data) {
-    const monday = data['Monday'] || {};
-    
-    // Render Monday timings
-    document.getElementById(DISPLAY_IDS.fajr).textContent = monday.fajr || '--';
-    document.getElementById(DISPLAY_IDS.dhuhr).textContent = monday.dhuhr || '--';
-    document.getElementById(DISPLAY_IDS.asr).textContent = monday.asr || '--';
-    document.getElementById(DISPLAY_IDS.maghrib).textContent = monday.maghrib || '--';
-    document.getElementById(DISPLAY_IDS.isha).textContent = monday.isha || '--';
-    
-    // Render Friday Fajr
-    const friday = data['Friday'] || {};
-    document.getElementById(DISPLAY_IDS.fridayFajr).textContent = friday.fajr || '--';
-}
-
-// ========================================
-// LOAD DATA FROM FIREBASE
-// ========================================
-async function loadData() {
-    setStatus('Loading from Firebase...', 'loading');
-    cacheBadge.textContent = '🔄 Loading...';
-
-    try {
-        const response = await fetch(DB_URL, {
-            cache: 'no-cache',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-
-        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-            const hasValidData = DAYS.some(day => data[day] && typeof data[day] === 'object');
-            if (hasValidData) {
-                currentData = data;
-                renderTimings(data);
-                setStatus('✅ Live from Firebase!', 'success');
-                cacheBadge.textContent = '📡 Live';
-                cacheBadge.className = 'badge';
-                updateTimeDisplay();
-                return;
+            // Initialize Firebase
+            if (!firebase.apps.length) {
+                try {
+                    firebase.initializeApp(firebaseConfig);
+                } catch (e) {
+                    console.error('Firebase init error:', e);
+                    updateStatus('offline', 'Config Error');
+                }
             }
-        }
+            const database = firebase.database();
+            const messagesRef = database.ref('messages');
+            const permissionsRef = database.ref('permissions/panel2');
 
-        // If data invalid, use default
-        currentData = getDefaultData();
-        renderTimings(currentData);
-        setStatus('⚠️ Using default data', 'warning');
-        cacheBadge.textContent = '📂 Default';
-        cacheBadge.className = 'badge';
+            // DOM elements for status
+            const wifiIcon = document.getElementById('wifiIcon');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
 
-    } catch (error) {
-        setStatus('⚠️ Error: ' + error.message, 'error');
-        // Try backup
-        const backup = localStorage.getItem('namaz_backup');
-        if (backup) {
-            try {
-                const parsed = JSON.parse(backup);
-                if (parsed && typeof parsed === 'object') {
-                    currentData = parsed;
-                    renderTimings(parsed);
-                    setStatus('📂 Using cached data', 'warning');
-                    cacheBadge.textContent = '📂 Cached';
-                    cacheBadge.className = 'badge';
+            // Update status function
+            function updateStatus(state, message) {
+                wifiIcon.className = 'fas fa-wifi status-wifi';
+                statusDot.className = 'status-dot';
+                statusText.className = 'status-text';
+
+                if (state === 'online') {
+                    wifiIcon.classList.add('online');
+                    statusDot.classList.add('online');
+                    statusText.classList.add('online');
+                    statusText.textContent = message || 'Connected';
+                } else if (state === 'offline') {
+                    wifiIcon.classList.add('offline');
+                    statusDot.classList.add('offline');
+                    statusText.classList.add('offline');
+                    statusText.textContent = message || 'Disconnected';
+                } else if (state === 'connecting') {
+                    wifiIcon.classList.add('connecting');
+                    statusDot.classList.add('connecting');
+                    statusText.classList.add('connecting');
+                    statusText.textContent = message || 'Connecting...';
+                }
+            }
+
+            // DOM elements
+            const phoneInput = document.getElementById('phoneInput2');
+            const messageInput = document.getElementById('messageInput2');
+            const sendBtn = document.getElementById('sendBtn2');
+            const refreshBtn = document.getElementById('refreshBtn2');
+            const clearBtn = document.getElementById('clearBtn2');
+            const imageBtn = document.getElementById('imageBtn2');
+            const voiceBtn = document.getElementById('voiceBtn2');
+            const imageUpload = document.getElementById('imageUpload2');
+            const smsList = document.getElementById('smsList2');
+            const counter = document.getElementById('counter2');
+            const smsBadge = document.getElementById('smsBadge');
+            const imageBadge = document.getElementById('imageBadge');
+            const voiceBadge = document.getElementById('voiceBadge');
+            const clearBadge = document.getElementById('clearBadge');
+            const voiceTimer = document.getElementById('voiceTimer');
+            const timerText = document.getElementById('timerText');
+            const timerClose = document.getElementById('timerClose');
+
+            // Night mode elements
+            const nightBtn = document.getElementById('nightModeBtn');
+            const nightIcon = document.getElementById('nightIcon');
+
+            // Permission states
+            let isSmsPermissionGranted = true;
+            let isImagePermissionGranted = true;
+            let isVoicePermissionGranted = true;
+            let isClearPermissionGranted = true;
+
+            // Voice recording variables
+            let mediaRecorder = null;
+            let audioChunks = [];
+            let isRecording = false;
+            let timerInterval = null;
+            let seconds = 0;
+
+            // Night mode toggle
+            let isNightMode = false;
+
+            nightBtn.addEventListener('click', function() {
+                isNightMode = !isNightMode;
+                document.body.classList.toggle('night-mode', isNightMode);
+                
+                nightBtn.classList.add('spin');
+                if (isNightMode) {
+                    nightIcon.className = 'fas fa-moon';
+                } else {
+                    nightIcon.className = 'fas fa-sun';
+                }
+                
+                setTimeout(() => {
+                    nightBtn.classList.remove('spin');
+                }, 600);
+            });
+
+            // Listen for permission changes from Firebase
+            permissionsRef.on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val) {
+                    if (val.sms !== undefined && val.sms !== null) {
+                        isSmsPermissionGranted = val.sms;
+                        updatePermissionUI();
+                    }
+                    if (val.image !== undefined && val.image !== null) {
+                        isImagePermissionGranted = val.image;
+                        updatePermissionUI();
+                    }
+                    if (val.voice !== undefined && val.voice !== null) {
+                        isVoicePermissionGranted = val.voice;
+                        updatePermissionUI();
+                    }
+                    if (val.clear !== undefined && val.clear !== null) {
+                        isClearPermissionGranted = val.clear;
+                        updatePermissionUI();
+                    }
+                }
+            });
+
+            // Update permission UI
+            function updatePermissionUI() {
+                // SMS Badge
+                if (isSmsPermissionGranted) {
+                    smsBadge.className = 'perm-badge granted';
+                    smsBadge.textContent = 'Granted ✅';
+                } else {
+                    smsBadge.className = 'perm-badge denied';
+                    smsBadge.textContent = 'Denied ❌';
+                }
+
+                // Image Badge
+                if (isImagePermissionGranted) {
+                    imageBadge.className = 'perm-badge granted';
+                    imageBadge.textContent = 'Granted ✅';
+                } else {
+                    imageBadge.className = 'perm-badge denied';
+                    imageBadge.textContent = 'Denied ❌';
+                }
+
+                // Voice Badge
+                if (isVoicePermissionGranted) {
+                    voiceBadge.className = 'perm-badge granted';
+                    voiceBadge.textContent = 'Granted ✅';
+                } else {
+                    voiceBadge.className = 'perm-badge denied';
+                    voiceBadge.textContent = 'Denied ❌';
+                }
+
+                // Clear Badge
+                if (isClearPermissionGranted) {
+                    clearBadge.className = 'perm-badge granted';
+                    clearBadge.textContent = 'Granted ✅';
+                } else {
+                    clearBadge.className = 'perm-badge denied';
+                    clearBadge.textContent = 'Denied ❌';
+                }
+
+                // Update buttons
+                sendBtn.disabled = !isSmsPermissionGranted;
+                imageBtn.disabled = !isImagePermissionGranted;
+                voiceBtn.disabled = !isVoicePermissionGranted;
+                // Clear button disabled if no SMS permission OR no Clear permission
+                clearBtn.disabled = !isSmsPermissionGranted || !isClearPermissionGranted;
+            }
+
+            // Check online status
+            function checkOnlineStatus() {
+                if (!navigator.onLine) {
+                    updateStatus('offline', 'No Internet');
+                    return false;
+                }
+                return true;
+            }
+
+            // Listen for online/offline events
+            window.addEventListener('online', function() {
+                updateStatus('connecting', 'Reconnecting...');
+                attachListener();
+            });
+
+            window.addEventListener('offline', function() {
+                updateStatus('offline', 'No Internet');
+            });
+
+            // Format time
+            function formatTime(secs) {
+                const mins = Math.floor(secs / 60);
+                const secsRem = secs % 60;
+                return `${mins.toString().padStart(2, '0')}:${secsRem.toString().padStart(2, '0')}`;
+            }
+
+            // Render messages with image and voice support
+            function renderMessages(snapshot) {
+                const data = snapshot.val();
+                if (!data) {
+                    smsList.innerHTML =
+                        `<li class="empty-state"><i class="fas fa-inbox"></i> No messages yet</li>`;
+                    counter.textContent = '0';
                     return;
                 }
-            } catch (e) {}
-        }
-        currentData = getDefaultData();
-        renderTimings(currentData);
-        setStatus('📂 Default data (offline)', 'warning');
-        cacheBadge.textContent = '📂 Offline';
-        cacheBadge.className = 'badge';
-    }
-}
 
-// ========================================
-// GET DEFAULT DATA
-// ========================================
-function getDefaultData() {
-    return {
-        "Monday": { "fajr": "5:30 AM", "dhuhr": "12:30 PM", "asr": "4:00 PM", "maghrib": "6:30 PM", "isha": "8:00 PM" },
-        "Tuesday": { "fajr": "5:28 AM", "dhuhr": "12:32 PM", "asr": "4:02 PM", "maghrib": "6:32 PM", "isha": "8:02 PM" },
-        "Wednesday": { "fajr": "5:26 AM", "dhuhr": "12:34 PM", "asr": "4:04 PM", "maghrib": "6:34 PM", "isha": "8:04 PM" },
-        "Thursday": { "fajr": "5:24 AM", "dhuhr": "12:36 PM", "asr": "4:06 PM", "maghrib": "6:36 PM", "isha": "8:06 PM" },
-        "Friday": { "fajr": "5:22 AM", "dhuhr": "12:38 PM", "asr": "4:08 PM", "maghrib": "6:38 PM", "isha": "8:08 PM" },
-        "Saturday": { "fajr": "5:20 AM", "dhuhr": "12:40 PM", "asr": "4:10 PM", "maghrib": "6:40 PM", "isha": "8:10 PM" },
-        "Sunday": { "fajr": "5:18 AM", "dhuhr": "12:42 PM", "asr": "4:12 PM", "maghrib": "6:42 PM", "isha": "8:12 PM" }
-    };
-}
+                const messages = Object.keys(data).map(key => ({
+                    id: key,
+                    ...data[key]
+                })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-// ========================================
-// UPDATE TIME DISPLAY
-// ========================================
-function updateTimeDisplay() {
-    const now = new Date();
-    document.getElementById('updateTime').textContent = '🔄 Last update: ' + now.toLocaleTimeString();
-}
+                let html = '';
+                messages.forEach(msg => {
+                    const phone = msg.phone || 'unknown';
+                    const message = msg.message || '—';
+                    const from = msg.from || 'unknown';
+                    const time = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : 'just now';
+                    const isOwn = from === 'Panel 2';
+                    const fromClass = isOwn ? 'own' : '';
+                    
+                    // Check for voice message
+                    let messageHtml = message;
+                    const voiceMatch = message.match(/\[VOICE\]\((.*?)\)(?:\|(\d+))?/);
+                    if (voiceMatch) {
+                        const audioUrl = voiceMatch[1];
+                        const duration = voiceMatch[2] || '0';
+                        const text = message.replace(/\[VOICE\]\(.*?\)(?:\|\d+)?/, '').trim();
+                        const durationStr = duration > 0 ? formatTime(parseInt(duration)) : '';
+                        messageHtml = `
+                            ${text ? `<div>${text}</div>` : ''}
+                            <div class="voice-indicator">
+                                <i class="fas fa-play-circle"></i>
+                                <span>Voice Message ${durationStr ? `<span class="voice-duration">${durationStr}</span>` : ''}</span>
+                            </div>
+                            <audio controls src="${audioUrl}"></audio>
+                        `;
+                    } else {
+                        // Check for markdown image
+                        const markdownMatch = message.match(/!\[.*?\]\((.*?)\)/);
+                        if (markdownMatch) {
+                            const imageUrl = markdownMatch[1];
+                            const text = message.replace(/!\[.*?\]\(.*?\)/, '').trim();
+                            messageHtml = `
+                                ${text ? `<div>${text}</div>` : ''}
+                                <img src="${imageUrl}" alt="Image" onerror="this.style.display='none'">
+                            `;
+                        } else if (message.match(/^https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp|bmp|svg)/i)) {
+                            messageHtml = `<img src="${message}" alt="Image" onerror="this.style.display='none'">`;
+                        }
+                    }
+                    
+                    let permissionBadge = '';
+                    if (msg.permissionDenied) {
+                        permissionBadge = `<span class="msg-permission-denied"><i class="fas fa-lock"></i> Permission Denied</span>`;
+                    }
+                    
+                    html += `
+                        <li>
+                            <div class="msg-meta">
+                                <span><i class="fas fa-phone"></i> ${phone}</span>
+                                <span><i class="far fa-clock"></i> ${time}</span>
+                            </div>
+                            <div class="msg-body">${messageHtml}</div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                                <span class="msg-from ${fromClass}"><i class="fas fa-user"></i> ${from}</span>
+                                ${permissionBadge}
+                            </div>
+                        </li>
+                    `;
+                });
+                smsList.innerHTML = html;
+                counter.textContent = messages.length;
+            }
 
-// ========================================
-// LISTEN FOR ADMIN UPDATES
-// ========================================
-function listenForUpdates() {
-    // BroadcastChannel for same browser
-    try {
-        if (typeof BroadcastChannel !== 'undefined') {
-            const channel = new BroadcastChannel('namaz_updates');
-            channel.onmessage = function(e) {
-                if (e.data?.type === 'update') {
-                    cacheBadge.textContent = '🔄 Updating...';
-                    cacheBadge.className = 'badge update';
-                    setStatus('📢 New timings available!', 'update');
-                    setTimeout(loadData, 500);
+            // Real-time listener
+            function attachListener() {
+                if (!checkOnlineStatus()) return;
+
+                updateStatus('connecting', 'Connecting...');
+
+                messagesRef.orderByChild('timestamp').limitToLast(50).on('value', (snapshot) => {
+                    renderMessages(snapshot);
+                    updateStatus('online', 'Connected');
+                }, (error) => {
+                    console.warn('Listener error:', error);
+                    updateStatus('offline', 'Connection lost');
+                });
+            }
+
+            // Convert file to base64
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Start voice recording
+            async function startRecording() {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Your browser does not support microphone recording.');
+                    return;
                 }
-            };
-        }
-    } catch (e) {}
 
-    // localStorage for cross-tab
-    window.addEventListener('storage', function(e) {
-        if (e.key === 'namaz_update_flag' && e.newValue === 'true') {
-            localStorage.removeItem('namaz_update_flag');
-            cacheBadge.textContent = '🔄 Updating...';
-            cacheBadge.className = 'badge update';
-            setStatus('📢 Update detected!', 'update');
-            setTimeout(loadData, 300);
-        }
-    });
-}
+                // Check voice permission
+                if (!isVoicePermissionGranted) {
+                    alert('❌ Voice Permission Denied! Please contact Master Panel to grant Voice permission.');
+                    return;
+                }
 
-// ========================================
-// AUTO REFRESH
-// ========================================
-let autoRefreshTimer = null;
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
 
-function startAutoRefresh() {
-    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    autoRefreshTimer = setInterval(() => {
-        loadData();
-    }, 30000);
-}
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
 
-// ========================================
-// KEYBOARD SHORTCUTS
-// ========================================
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-        e.preventDefault();
-        loadData();
-    }
-});
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        
+                        // Convert to base64 for sending
+                        const reader = new FileReader();
+                        reader.onload = async function() {
+                            const base64Audio = reader.result;
+                            await sendVoiceMessage(base64Audio, seconds);
+                        };
+                        reader.readAsDataURL(audioBlob);
+                        
+                        // Reset
+                        stream.getTracks().forEach(track => track.stop());
+                        audioChunks = [];
+                        seconds = 0;
+                        voiceTimer.classList.remove('show');
+                        voiceBtn.classList.remove('recording');
+                        clearInterval(timerInterval);
+                    };
 
-// ========================================
-// INIT
-// ========================================
-listenForUpdates();
-loadData();
-startAutoRefresh();
+                    mediaRecorder.start();
+                    isRecording = true;
+                    voiceBtn.classList.add('recording');
+                    
+                    // Start timer
+                    seconds = 0;
+                    timerText.textContent = '00:00';
+                    voiceTimer.classList.add('show');
+                    
+                    timerInterval = setInterval(() => {
+                        seconds++;
+                        timerText.textContent = formatTime(seconds);
+                    }, 1000);
 
-console.log('👀 User Panel - Real-time Updates');
-console.log('📌 Data URL:', DB_URL);
-console.log('⌨️ Ctrl+R = Refresh');
-</script>
+                } catch (err) {
+                    console.error('Microphone error:', err);
+                    alert('Could not access microphone. Please allow microphone permission.');
+                }
+            }
 
+            // Stop recording
+            function stopRecording() {
+                if (mediaRecorder && isRecording) {
+                    mediaRecorder.stop();
+                    isRecording = false;
+                }
+            }
+
+            // Send voice message
+            async function sendVoiceMessage(audioData, duration) {
+                if (!checkOnlineStatus()) {
+                    alert('No internet connection.');
+                    return;
+                }
+
+                const phone = phoneInput.value.trim();
+                if (!phone || phone.length < 4) {
+                    alert('Please enter a valid phone number.');
+                    return;
+                }
+
+                // Check SMS permission (for sending message)
+                if (!isSmsPermissionGranted) {
+                    alert('❌ SMS Permission Denied! Cannot send voice message without SMS permission.');
+                    return;
+                }
+
+                const message = `🎤 Voice: [VOICE](${audioData})|${duration}`;
+
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+                try {
+                    await messagesRef.push({
+                        phone: phone,
+                        message: message,
+                        from: 'Panel 2',
+                        timestamp: Date.now()
+                    });
+                    updateStatus('online', 'Connected');
+                } catch (e) {
+                    console.error('Send error:', e);
+                    alert('Failed to send voice message.');
+                } finally {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                }
+            }
+
+            // Voice button click - Toggle recording
+            voiceBtn.addEventListener('click', function() {
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            });
+
+            // Timer close button
+            timerClose.addEventListener('click', function() {
+                if (isRecording) {
+                    stopRecording();
+                }
+            });
+
+            // Image button click
+            imageBtn.addEventListener('click', function() {
+                if (!isImagePermissionGranted) {
+                    alert('❌ Image Permission Denied! Please contact Master Panel to grant Image permission.');
+                    return;
+                }
+                imageUpload.click();
+            });
+
+            // Image upload handler
+            imageUpload.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    return;
+                }
+                try {
+                    const base64 = await fileToBase64(file);
+                    await sendSms(base64, 'image');
+                } catch (err) {
+                    console.error('Image upload error:', err);
+                    alert('Failed to upload image.');
+                }
+                imageUpload.value = '';
+            });
+
+            // Send SMS with optional image
+            async function sendSms(fileData = null, type = null) {
+                if (!checkOnlineStatus()) {
+                    alert('No internet connection.');
+                    return;
+                }
+
+                if (!isSmsPermissionGranted) {
+                    alert('❌ SMS Permission Denied! Please contact Master Panel to grant SMS permission.');
+                    return;
+                }
+
+                if (type === 'image' && !isImagePermissionGranted) {
+                    alert('❌ Image Permission Denied! Please contact Master Panel to grant Image permission.');
+                    return;
+                }
+
+                const phone = phoneInput.value.trim();
+                let message = messageInput.value.trim();
+
+                if (!phone || phone.length < 4) {
+                    alert('Please enter a valid phone number.');
+                    return;
+                }
+
+                if (fileData && type === 'image') {
+                    message = message || '📸 Image:';
+                    message = message + ' ![Image](' + fileData + ')';
+                }
+
+                if (!message || message.trim() === '') {
+                    alert('Please enter a message or select an image.');
+                    return;
+                }
+
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+                try {
+                    await messagesRef.push({
+                        phone: phone,
+                        message: message,
+                        from: 'Panel 2',
+                        timestamp: Date.now()
+                    });
+                    messageInput.value = '';
+                    messageInput.focus();
+                    updateStatus('online', 'Connected');
+                } catch (e) {
+                    console.error('Send error:', e);
+                    alert('Failed to send.');
+                } finally {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                }
+            }
+
+            // Send button click
+            sendBtn.addEventListener('click', function() {
+                sendSms();
+            });
+
+            // Clear all messages (with permission check)
+            async function clearMessages() {
+                if (!checkOnlineStatus()) {
+                    alert('No internet connection.');
+                    return;
+                }
+
+                // Check SMS permission
+                if (!isSmsPermissionGranted) {
+                    alert('❌ SMS Permission Denied! You cannot clear messages.');
+                    return;
+                }
+
+                // Check Clear permission
+                if (!isClearPermissionGranted) {
+                    alert('❌ Clear Chat Permission Denied! Please contact Master Panel to grant Clear permission.');
+                    return;
+                }
+
+                if (!confirm('Delete all messages? This cannot be undone.')) return;
+                
+                try {
+                    await messagesRef.remove();
+                    updateStatus('online', 'Connected');
+                    alert('✅ All messages cleared successfully!');
+                } catch (e) {
+                    console.error('Clear error:', e);
+                    alert('Failed to clear messages.');
+                }
+            }
+
+            // Refresh
+            function refresh() {
+                if (!checkOnlineStatus()) {
+                    alert('No internet connection.');
+                    return;
+                }
+                updateStatus('connecting', 'Refreshing...');
+                messagesRef.once('value').then(snapshot => {
+                    renderMessages(snapshot);
+                    updateStatus('online', 'Connected');
+                }).catch(err => {
+                    console.warn('Refresh error:', err);
+                    updateStatus('offline', 'Refresh failed');
+                });
+                refreshBtn.innerHTML = '<i class="fas fa-check"></i> Updated';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                }, 1200);
+            }
+
+            // Event listeners
+            sendBtn.addEventListener('click', sendSms);
+            refreshBtn.addEventListener('click', refresh);
+            clearBtn.addEventListener('click', clearMessages);
+
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    sendSms();
+                }
+            });
+
+            // Init
+            attachListener();
+
+            // Get initial permissions
+            permissionsRef.once('value').then(snapshot => {
+                const val = snapshot.val();
+                if (!val) {
+                    permissionsRef.set({ sms: true, image: true, voice: true, clear: true });
+                } else {
+                    if (val.sms === undefined) permissionsRef.update({ sms: true });
+                    if (val.image === undefined) permissionsRef.update({ image: true });
+                    if (val.voice === undefined) permissionsRef.update({ voice: true });
+                    if (val.clear === undefined) permissionsRef.update({ clear: true });
+                }
+                updatePermissionUI();
+            });
+
+            // Seed data
+            const seedKey = 'sms_panel2_seeded_v29';
+            if (!localStorage.getItem(seedKey)) {
+                messagesRef.once('value').then(snapshot => {
+                    if (!snapshot.exists()) {
+                        messagesRef.push({
+                            phone: '+92 300 1234567',
+                            message: '👋 Panel 2 ready! All permissions are now separate!',
+                            from: 'System',
+                            timestamp: Date.now()
+                        }).then(() => localStorage.setItem(seedKey, 'true'));
+                    } else {
+                        localStorage.setItem(seedKey, 'true');
+                    }
+                }).catch(() => {});
+            }
+
+            console.log('📱 Panel 2 (Slave) with Separate Permissions ready!');
+            console.log('🔐 SMS Permission:', isSmsPermissionGranted ? 'Granted' : 'Denied');
+            console.log('📸 Image Permission:', isImagePermissionGranted ? 'Granted' : 'Denied');
+            console.log('🎤 Voice Permission:', isVoicePermissionGranted ? 'Granted' : 'Denied');
+            console.log('🗑️ Clear Permission:', isClearPermissionGranted ? 'Granted' : 'Denied');
+        })();
+    </script>
 </body>
-</html>
+                    </html>
